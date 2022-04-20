@@ -79,5 +79,4 @@ void setup(void){
 void loop(void){
   server.handleClient();
   delay(1);
-  Serial.println(analogRead(A0));
 }
