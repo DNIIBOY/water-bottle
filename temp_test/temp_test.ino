@@ -1,6 +1,6 @@
 /*********
   Rui Santos
-  Complete project details at https://RandomNerdTutorials.com  
+  Complete project details at https://randomnerdtutorials.com/esp32-ds18b20-temperature-arduino-ide/  
 *********/
 
 #include <OneWire.h>
