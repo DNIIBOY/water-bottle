@@ -17,10 +17,13 @@ const char MAIN_page[] PROGMEM = R"=====(
 
 <div class="card">
   <h4>Den smarteste drikkedunk i byen</h4><br>
-  <h1>Water Temp: <span id="TempValue">0</span> °C</h1><br>
+  <h1>Water Temp: <span id="TempValue">0</span> &deg;C</h1><br>
 </div>
 <div class="card">
   <h1>Water Pressure: <span id="PressureValue">0</span></h1><br>
+</div>
+<div class="card">
+  <h1>Time remaining: <span id="TimeValue">0</span></h1><br>
 </div>
 <script>
 
@@ -28,7 +31,19 @@ setInterval(function() {
   // Call a function repetatively with 2 Second interval
   getTempData();
   getPressureData();
-}, 2000); //2000mSeconds update rate
+  getTimeData();
+}, 1000); //2000mSeconds update rate
+
+function getTimeData() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("TimeValue").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "readTime", true);
+  xhttp.send();
+}
 
 function getTempData() {
   var xhttp = new XMLHttpRequest();
