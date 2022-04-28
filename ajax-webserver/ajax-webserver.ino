@@ -55,14 +55,14 @@ int pressureVal = 0;
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, LEDPin, NEO_GRB + NEO_KHZ800);
 
-const int MAX_POWER = 64; // Max led pwoer
+const int MAX_POWER = 32; // Max led pwoer
 
 const int START_TIME = 300;  // Timer start time.
 int timer = START_TIME; // 5 min
 int color[3] = {0, 0, MAX_POWER};  // Color of temp RGB strip.
 
-const int COLD_TEMP = 5; // Temp for full blue lights
-const int HOT_TEMP = 20; // Temp for full red lights
+const int COLD_TEMP = 14; // Temp for full blue lights
+const int HOT_TEMP = 25; // Temp for full red lights
 
 // Seperate thread for time, to prevent pausing the system
 void updateTimer(){
@@ -156,22 +156,22 @@ void updateColorArray(){
   if (temp <= COLD_TEMP){
     red = 0;
     blue = MAX_POWER;
-    return;
   }
   else if (temp >= HOT_TEMP){
     red = MAX_POWER;
     blue = 0;
-    return;
-  }
-  
-  float part = (temp-COLD_TEMP)/(HOT_TEMP-COLD_TEMP);
-
-  if (part < 0.5){
-    red = part*2*MAX_POWER;
   }
   else{
-    blue = (1-((part-0.5)*2))*MAX_POWER;
+    float part = (temp-COLD_TEMP)/(HOT_TEMP-COLD_TEMP);
+
+    if (part < 0.5){
+      red = part*2*MAX_POWER;
+    }
+    else{
+      blue = (1-((part-0.5)*2))*MAX_POWER;
+    }
   }
+  
   color[0] = red;
   color[1] = 0;
   color[2] = blue;
