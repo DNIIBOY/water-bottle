@@ -116,7 +116,7 @@ void handlePressure() {
 //===============================================================
 
 void setup(void){
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println();
   Serial.println("Booting Sketch...");
 
@@ -182,7 +182,21 @@ void updateTempColor(){
   {
     pixels.setPixelColor(i, pixels.Color(color[0], color[1], color[2]));
   }
-  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+
+int clockPixel(){
+    float part = (START_TIME-timer)/START_TIME;
+    int pixel = int(part*NUMPIXELS);
+    if (pixel != 0){
+      pixel = pixel-1;
+    }
+    return pixel;
+}
+
+void displayClock(){
+  int pixel = clockPixel();
+  Serial.println(pixel);
+  pixels.setPixelColor(pixel, pixels.Color(64, 64, 64));
 }
 
 //===============================================================
@@ -191,10 +205,11 @@ void updateTempColor(){
 void loop(void){
   server.handleClient();
   counterThread.check();
-  updateTemp();
+  updateTemp();  // Update temp sensor value
   updateColorArray();
-  Serial.println(temp);
-  updateTempColor();  
-
+  updateTempColor();
+  displayClock();
+  
+  pixels.show(); // This sends the updated pixel color to the hardware.
   delay(1);
 }
