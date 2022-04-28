@@ -3,15 +3,14 @@
 #define PIN 1
 
 // How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS 144
+#define NUMPIXELS 45
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-int delayval = 10; // delay for half a second
+int delayval = 20; // delay for half a second
 
 void setup() 
 {
-  pixels.show(); // This sends the updated pixel color to the hardware.
   pixels.begin(); // This initializes the NeoPixel library.
 }
 
