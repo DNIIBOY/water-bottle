@@ -1,7 +1,7 @@
 /*
  * ESP32 AJAX Demo
  * Updates and Gets data from webpage without page refresh
- * https://circuits4you.com
+ * https://circuits4you.comM
  */
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -15,6 +15,29 @@ WebServer server(80);
 const char* ssid = "Water Bottle";
 const char* password = "123456789";
 
+
+//===============================================================
+// Setup for DS1820B Temp Sensor
+//===============================================================
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// GPIO where the DS18B20 is connected to
+const int oneWireBus = 4;  // 7 Pins up from bottom right.
+
+// Setup a oneWire instance to communicate with any OneWire devices
+OneWire oneWire(oneWireBus);
+
+// Pass our oneWire reference to Dallas Temperature sensor 
+DallasTemperature sensors(&oneWire);
+
+//===============================================================
+// Setup for Pressure Sensor
+//===============================================================
+
+int analogPressure = A0;
+int pressureVal = 0;
+
 //===============================================================
 // This routine is executed when you open its IP in browser
 //===============================================================
@@ -22,12 +45,20 @@ void handleRoot() {
  String s = MAIN_page; //Read HTML contents
  server.send(200, "text/html", s); //Send web page
 }
+
+void handleTemp() {
+ sensors.requestTemperatures(); 
+ float tempC = sensors.getTempCByIndex(0) - 0.5;
+ String outVal = String(tempC);
  
-void handleADC() {
- int a = analogRead(A0);
- String adcValue = String(a);
+ server.send(200, "text/plane", outVal); //Send output value only to client ajax request
+}
  
- server.send(200, "text/plane", adcValue); //Send ADC value only to client ajax request
+void handlePressure() {
+ int pressure = analogRead(A0);
+ String outVal = String(pressure);
+ 
+ server.send(200, "text/plane", outVal); //Send ADC value only to client ajax request
 }
 
 //===============================================================
@@ -40,9 +71,12 @@ void setup(void){
   Serial.println("Booting Sketch...");
 
 
-//ESP32 As access point
+  //ESP32 As access point
   WiFi.mode(WIFI_AP); //Access Point mode
   WiFi.softAP(ssid, password);
+
+  // Start the DS18B20 Temp sensor
+  sensors.begin();
 
 
 /*
@@ -67,7 +101,8 @@ void setup(void){
 //----------------------------------------------------------------
  */
   server.on("/", handleRoot);      //This is display page
-  server.on("/readADC", handleADC);//To get update of ADC Value only
+  server.on("/readTemp", handleTemp);//To get update of Temp Value only
+  server.on("/readPressure", handlePressure);//To get update of Temp Value only
  
   server.begin();                  //Start server
   Serial.println("HTTP server started");

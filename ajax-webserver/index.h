@@ -5,7 +5,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 .card{
     max-width: 400px;
      min-height: 250px;
-     background: #02b875;
+     background: #0278b8;
      padding: 30px;
      box-sizing: border-box;
      color: #FFF;
@@ -16,26 +16,39 @@ const char MAIN_page[] PROGMEM = R"=====(
 <body>
 
 <div class="card">
-  <h4>The ESP32 Update web page without refresh</h4><br>
-  <h1>Sensor Value:<span id="ADCValue">0</span></h1><br>
-  <br><a href="https://circuits4you.com">Circuits4you.com</a>
+  <h4>Den smarteste drikkedunk i byen</h4><br>
+  <h1>Water Temp: <span id="TempValue">0</span> °C</h1><br>
+</div>
+<div class="card">
+  <h1>Water Pressure: <span id="PressureValue">0</span></h1><br>
 </div>
 <script>
 
 setInterval(function() {
   // Call a function repetatively with 2 Second interval
-  getData();
+  getTempData();
+  getPressureData();
 }, 2000); //2000mSeconds update rate
 
-function getData() {
+function getTempData() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("ADCValue").innerHTML =
-      this.responseText;
+      document.getElementById("TempValue").innerHTML = this.responseText;
     }
   };
-  xhttp.open("GET", "readADC", true);
+  xhttp.open("GET", "readTemp", true);
+  xhttp.send();
+}
+
+function getPressureData() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("PressureValue").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "readPressure", true);
   xhttp.send();
 }
 </script>
