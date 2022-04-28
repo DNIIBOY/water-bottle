@@ -24,7 +24,7 @@ void setup() {
 
 void loop() {
   sensors.requestTemperatures(); 
-  float temperatureC = sensors.getTempCByIndex(0);
+  float temperatureC = sensors.getTempCByIndex(0) - 0.5;
   Serial.print(temperatureC);
   Serial.println("ºC"); 
   delay(500);

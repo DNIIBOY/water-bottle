@@ -1,6 +1,5 @@
-int analogPin = A0;     // potentiometer wiper (middle terminal) connected to analog pin 3
-                       // outside leads to ground and +5V
-int val = 0;           // variable to store the value read
+int analogPressure = A0;
+int pressureVal = 0;
 
 String input;  // Input for calibration
 
