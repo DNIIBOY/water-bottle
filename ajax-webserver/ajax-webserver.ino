@@ -55,10 +55,10 @@ int pressureVal = 0;
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, LEDPin, NEO_GRB + NEO_KHZ800);
 
-const int MAX_POWER = 32; // Max led pwoer
+const int MAX_POWER = 4; // Max led pwoer
 
-const int START_TIME = 300;  // Timer start time.
-int timer = START_TIME; // 5 min
+const int START_TIME = 60;  // Timer start time in secs.
+int timer = START_TIME;  // Current timer value
 int color[3] = {0, 0, MAX_POWER};  // Color of temp RGB strip.
 
 const int COLD_TEMP = 14; // Temp for full blue lights
@@ -70,7 +70,7 @@ void updateTimer(){
     timer--; 
   }
 }
-TimedAction counterThread = TimedAction(1000, updateTimer);
+TimedAction timerThread = TimedAction(1000, updateTimer);
 
 //===============================================================
 // This routine is executed when you open its IP in browser
@@ -182,34 +182,46 @@ void updateTempColor(){
   {
     pixels.setPixelColor(i, pixels.Color(color[0], color[1], color[2]));
   }
+  if (timer > 0){
+   // Green LED to display start of clock
+  pixels.setPixelColor(23, pixels.Color(0, MAX_POWER, 0)); 
+  }
 }
 
-int clockPixel(){
-    float part = (START_TIME-timer)/START_TIME;
-    int pixel = int(part*NUMPIXELS);
-    if (pixel != 0){
-      pixel = pixel-1;
-    }
+float clockPixel(){
+    float part = ((float)START_TIME-(float)timer)/(float)START_TIME;
+    float pix = ((part*NUMPIXELS)+(23));
+    int pixel = (int)pix%NUMPIXELS;
     return pixel;
 }
 
 void displayClock(){
   int pixel = clockPixel();
   Serial.println(pixel);
-  pixels.setPixelColor(pixel, pixels.Color(64, 64, 64));
+  pixels.setPixelColor(pixel, pixels.Color(MAX_POWER, MAX_POWER, MAX_POWER));
+}
+
+void drinkAlert(){
+  for(int i=0;i<NUMPIXELS;i++)
+  {
+    pixels.setPixelColor(i, pixels.Color(color[0], color[1], color[2]));
+  }
 }
 
 //===============================================================
 // This routine is executed when you open its IP in browser
 //===============================================================
 void loop(void){
-  server.handleClient();
-  counterThread.check();
+  timerThread.check();  // Update timer variable each second.
   updateTemp();  // Update temp sensor value
   updateColorArray();
-  updateTempColor();
-  displayClock();
   
+  if (timer > 0){
+    updateTempColor();
+    displayClock();
+  }
+
+  server.handleClient();  // Update webpage
   pixels.show(); // This sends the updated pixel color to the hardware.
   delay(1);
 }
