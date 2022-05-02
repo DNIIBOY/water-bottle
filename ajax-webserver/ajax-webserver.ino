@@ -38,7 +38,7 @@ DallasTemperature sensors(&oneWire);
 // Setup for Pressure Sensor
 //===============================================================
 
-int analogPressure = A0;
+int analogPressurePin = A0;
 int pressureVal = 0;
 
 //===============================================================
@@ -48,16 +48,20 @@ int pressureVal = 0;
 #include <TimedAction.h>
 #include <Adafruit_NeoPixel.h>
 
-#define LEDPin 1 // GPIO 1 for led strip
+// Setup pins for both LEDs
+#define TopLEDPin 6  // Bottom right
+#define BotLEDPin 7  // 1 up from bottom right
 
 // How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS 45
+#define TOPNUMPIXELS 45
+#define BOTNUMPIXELS 41
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, LEDPin, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel topPixels = Adafruit_NeoPixel(TOPNUMPIXELS, TopLEDPin, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel botPixels = Adafruit_NeoPixel(BOTNUMPIXELS, BotLEDPin, NEO_GRB + NEO_KHZ800);
 
 const int MAX_POWER = 4; // Max led pwoer
 
-const int START_TIME = 60;  // Timer start time in secs.
+const int START_TIME = 300;  // Timer start time in secs.
 int timer = START_TIME;  // Current timer value
 int color[3] = {0, 0, MAX_POWER};  // Color of temp RGB strip.
 
@@ -66,14 +70,18 @@ const int HOT_TEMP = 25; // Temp for full red lights
 
 // Seperate thread for time, to prevent pausing the system
 void updateTimer(){
-  if (timer > 0){
-    timer--; 
-  }
+  timer--;
 }
 TimedAction timerThread = TimedAction(1000, updateTimer);
 
 //===============================================================
-// This routine is executed when you open its IP in browser
+// Setup for drink alert and buzzer.
+//===============================================================
+
+#define buzzPin 2
+
+//===============================================================
+// These routines are executed when you open its IP in browser
 //===============================================================
 void handleRoot() {
  String s = MAIN_page; //Read HTML contents
@@ -105,7 +113,7 @@ void handleTemp() {
 }
  
 void handlePressure() {
- int pressure = analogRead(A0);
+ int pressure = analogRead(analogPressurePin);
  String outVal = String(pressure);
  
  server.send(200, "text/plane", outVal); //Send ADC value only to client ajax request
@@ -129,7 +137,11 @@ void setup(void){
   sensors.begin();
 
   // Start the LED pixels
-  pixels.begin();
+  topPixels.begin();
+  botPixels.begin();
+
+  // Setup buzzer
+  pinMode(buzzPin, OUTPUT);
 
   server.on("/", handleRoot);      //This is display page
   server.on("/readTime", handleTime);//To get update of Time Value only
@@ -178,33 +190,44 @@ void updateColorArray(){
 }
 
 void updateTempColor(){
-  for(int i=0;i<NUMPIXELS;i++)
+  for(int i=0;i<TOPNUMPIXELS;i++)
   {
-    pixels.setPixelColor(i, pixels.Color(color[0], color[1], color[2]));
+    topPixels.setPixelColor(i, topPixels.Color(color[0], color[1], color[2]));
+    botPixels.setPixelColor(i, botPixels.Color(color[0], color[1], color[2]));
   }
   if (timer > 0){
    // Green LED to display start of clock
-  pixels.setPixelColor(23, pixels.Color(0, MAX_POWER, 0)); 
+  topPixels.setPixelColor(23, topPixels.Color(0, MAX_POWER, 0));
+  botPixels.setPixelColor(23, botPixels.Color(0, MAX_POWER, 0)); 
   }
 }
 
 float clockPixel(){
     float part = ((float)START_TIME-(float)timer)/(float)START_TIME;
-    float pix = ((part*NUMPIXELS)+(23));
-    int pixel = (int)pix%NUMPIXELS;
+    float pix = ((part*TOPNUMPIXELS)+(23));
+    int pixel = (int)pix%TOPNUMPIXELS;
     return pixel;
 }
 
 void displayClock(){
   int pixel = clockPixel();
-  Serial.println(pixel);
-  pixels.setPixelColor(pixel, pixels.Color(MAX_POWER, MAX_POWER, MAX_POWER));
+  topPixels.setPixelColor(pixel, topPixels.Color(MAX_POWER, MAX_POWER, MAX_POWER));
 }
 
 void drinkAlert(){
-  for(int i=0;i<NUMPIXELS;i++)
-  {
-    pixels.setPixelColor(i, pixels.Color(color[0], color[1], color[2]));
+  if (timer % 2 == 0){
+    for(int i=0;i<TOPNUMPIXELS;i++)
+    {
+      topPixels.setPixelColor(i, topPixels.Color(MAX_POWER, MAX_POWER, MAX_POWER));
+      botPixels.setPixelColor(i, botPixels.Color(MAX_POWER, MAX_POWER, MAX_POWER));
+    }
+  }
+  else{
+    for(int i=0;i<TOPNUMPIXELS;i++)
+    {
+      topPixels.setPixelColor(i, topPixels.Color(color[0], color[1], color[2]));
+      botPixels.setPixelColor(i, botPixels.Color(color[0], color[1], color[2]));
+    }
   }
 }
 
@@ -220,8 +243,18 @@ void loop(void){
     updateTempColor();
     displayClock();
   }
+  else if (timer == 0){
+    digitalWrite(buzzPin, HIGH);
+    delay(60);
+    digitalWrite(buzzPin, LOW);
+    delay(250);
+  }
+  if (timer <= 0){
+    drinkAlert();
+  }
 
   server.handleClient();  // Update webpage
-  pixels.show(); // This sends the updated pixel color to the hardware.
+  topPixels.show(); // This sends the updated pixel color to the hardware.
+  botPixels.show();
   delay(1);
 }
