@@ -17,13 +17,13 @@ const char MAIN_page[] PROGMEM = R"=====(
 
 <div class="card">
   <h4>Den smarteste drikkedunk i byen</h4><br>
-  <h1>Water Temp: <span id="TempValue">0</span> &deg;C</h1><br>
+  <h1>Water Temp:<br> <span id="TempValue">0</span> &deg;C</h1><br>
 </div>
 <div class="card">
-  <h1>Water Pressure: <span id="PressureValue">0</span></h1><br>
+  <h1>Water Level:<br> <span id="PressureValue">0</span>%</h1><br>
 </div>
 <div class="card">
-  <h1>Time remaining: <span id="TimeValue">0</span></h1><br>
+  <h1>Time remaining:<br> <span id="TimeValue">0</span></h1><br>
 </div>
 <script>
 
@@ -32,7 +32,7 @@ setInterval(function() {
   getTempData();
   getPressureData();
   getTimeData();
-}, 1000); //2000mSeconds update rate
+}, 1000); //1000mSeconds update rate
 
 function getTimeData() {
   var xhttp = new XMLHttpRequest();

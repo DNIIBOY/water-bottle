@@ -60,9 +60,9 @@ Adafruit_NeoPixel topPixels = Adafruit_NeoPixel(TOPNUMPIXELS, TopLEDPin, NEO_GRB
 Adafruit_NeoPixel botPixels = Adafruit_NeoPixel(BOTNUMPIXELS, BotLEDPin, NEO_GRB + NEO_KHZ800);
 
 const int MAX_POWER = 4; // Max led power
-const int LOW_MULTI = 8; // Multiplier for lower LEDS
+const int LOW_MULTI = 20; // Multiplier for lower LEDS. Max is 64
 
-const int START_TIME = 300;  // Timer start time in secs.
+const int START_TIME = 45;  // Timer start time in secs.
 int timer = START_TIME;  // Current timer value
 int color[3] = {0, 0, MAX_POWER};  // Color of temp RGB strip.
 
@@ -93,10 +93,10 @@ void handleTime() {
   int mins = floor(timer / 60);
   int secs = timer % 60;
   String outVal = "";
-  if (mins > 0){
+  if (secs > 0){
     outVal += String(mins) + ":";
   }
-  if (secs < 10){
+  if (secs < 10 && secs > 0){
     outVal += "0" + String(secs);
   }
   else{
@@ -243,11 +243,11 @@ void loop(void){
     updateTempColor();
     displayClock();
   }
-  else if (timer == 0){
+  else if (timer == 0 || timer == -1){
     digitalWrite(buzzPin, HIGH);
     delay(60);
     digitalWrite(buzzPin, LOW);
-    delay(250);
+    delay(150);
   }
   if (timer <= 0){
     drinkAlert();
