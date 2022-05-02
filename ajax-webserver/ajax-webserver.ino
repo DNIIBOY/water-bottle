@@ -49,8 +49,8 @@ int pressureVal = 0;
 #include <Adafruit_NeoPixel.h>
 
 // Setup pins for both LEDs
-#define TopLEDPin 6  // Bottom right
-#define BotLEDPin 7  // 1 up from bottom right
+#define TopLEDPin 0  // Bottom right
+#define BotLEDPin 15  // 1 up from bottom right
 
 // How many NeoPixels are attached to the Arduino?
 #define TOPNUMPIXELS 45
@@ -59,7 +59,8 @@ int pressureVal = 0;
 Adafruit_NeoPixel topPixels = Adafruit_NeoPixel(TOPNUMPIXELS, TopLEDPin, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel botPixels = Adafruit_NeoPixel(BOTNUMPIXELS, BotLEDPin, NEO_GRB + NEO_KHZ800);
 
-const int MAX_POWER = 4; // Max led pwoer
+const int MAX_POWER = 4; // Max led power
+const int LOW_MULTI = 8; // Multiplier for lower LEDS
 
 const int START_TIME = 300;  // Timer start time in secs.
 int timer = START_TIME;  // Current timer value
@@ -193,12 +194,11 @@ void updateTempColor(){
   for(int i=0;i<TOPNUMPIXELS;i++)
   {
     topPixels.setPixelColor(i, topPixels.Color(color[0], color[1], color[2]));
-    botPixels.setPixelColor(i, botPixels.Color(color[0], color[1], color[2]));
+    botPixels.setPixelColor(i, botPixels.Color(min(color[0] * LOW_MULTI, 255), min(color[1] * LOW_MULTI, 255), min(color[2] * LOW_MULTI, 255)));
   }
   if (timer > 0){
    // Green LED to display start of clock
   topPixels.setPixelColor(23, topPixels.Color(0, MAX_POWER, 0));
-  botPixels.setPixelColor(23, botPixels.Color(0, MAX_POWER, 0)); 
   }
 }
 
@@ -219,14 +219,14 @@ void drinkAlert(){
     for(int i=0;i<TOPNUMPIXELS;i++)
     {
       topPixels.setPixelColor(i, topPixels.Color(MAX_POWER, MAX_POWER, MAX_POWER));
-      botPixels.setPixelColor(i, botPixels.Color(MAX_POWER, MAX_POWER, MAX_POWER));
+      botPixels.setPixelColor(i, botPixels.Color(min(MAX_POWER * LOW_MULTI, 255), min(MAX_POWER * LOW_MULTI, 255), min(MAX_POWER * LOW_MULTI, 255)));
     }
   }
   else{
     for(int i=0;i<TOPNUMPIXELS;i++)
     {
       topPixels.setPixelColor(i, topPixels.Color(color[0], color[1], color[2]));
-      botPixels.setPixelColor(i, botPixels.Color(color[0], color[1], color[2]));
+      botPixels.setPixelColor(i, botPixels.Color(min(color[0] * LOW_MULTI, 255), min(color[1] * LOW_MULTI, 255), min(color[2] * LOW_MULTI, 255)));
     }
   }
 }
