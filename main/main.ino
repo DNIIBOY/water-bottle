@@ -27,8 +27,8 @@ const int analogPressurePin = A4;
 int pressureVal = 0;  // Current value of pressure sensor
 
 // Calibration values for how full/empty the bottle is
-int mini = 429;  // Value for empty bottle
-int maxi = 450;  // Value for full bottle
+int mini = 505;  // Value for empty bottle
+int maxi = 540;  // Value for full bottle
 
 int pressureVals[avgCount];  // For taking average of last avgCount values
 int pressureAvg;  // average value over avgCount meassurements
@@ -98,7 +98,7 @@ Adafruit_NeoPixel topPixels = Adafruit_NeoPixel(TOPNUMPIXELS, TopLEDPin, NEO_GRB
 Adafruit_NeoPixel botPixels = Adafruit_NeoPixel(BOTNUMPIXELS, BotLEDPin, NEO_GRB + NEO_KHZ800);
 
 const int MAX_POWER = 4; // Max led power
-const int LOW_MULTI = 64; // Multiplier for lower LEDS. Max is 64
+const int LOW_MULTI = 24; // Multiplier for lower LEDS. Max is 64
 
 const int START_TIME = 45;  // Timer start time in secs.
 int timer = START_TIME;  // Current timer value
