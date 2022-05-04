@@ -13,17 +13,21 @@ const char MAIN_page[] PROGMEM = R"=====(
      box-shadow: 0px 2px 18px -4px rgba(0,0,0,0.75);
 }
 </style>
+<head>
+    <title>Smart Drikkedunk</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+</head>
 <body>
 
 <div class="card">
-  <h4>Den smarteste drikkedunk i byen</h4><br>
-  <h1>Water Temp:<br> <span id="TempValue">0</span> &deg;C</h1><br>
+  <h1>Temperatur:<br> <span id="TempValue">0</span> &deg;C</h1><br>
 </div>
 <div class="card">
-  <h1>Water Level:<br> <span id="PressureValue">0</span>%</h1><br>
+  <h1>Vandmængde:<br> <span id="PressureValue">0</span>%</h1><br>
 </div>
 <div class="card">
-  <h1>Time remaining:<br> <span id="TimeValue">0</span></h1><br>
+  <h1>Drik vand om:<br> <span id="TimeValue">0</span></h1><br>
 </div>
 <script>
 

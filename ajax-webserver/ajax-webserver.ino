@@ -330,9 +330,10 @@ void loop(void){
     emptyCount = 0;
   }
 
-  if (emptyCount == 10)
+  if (emptyCount >= 10)
   {
-    timer = START_TIME;
+    //timer = START_TIME;
+    Serial.println("Water Time");
   }
 
   delay(1);

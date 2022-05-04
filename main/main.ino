@@ -227,12 +227,14 @@ void loop(void){
   timerThread.check();  // Update timer variable each second.
   pressureCountThread.check();  // Update pressure avgCount times per second.
   updateTemp();  // Update temp sensor value
+  temp = 9;
   
   updateColorArray();
 
   if (emptyCount >= 10)
   {
-    timer = START_TIME;
+    //timer = START_TIME;
+    Serial.println("Water time");
   }
   
   if (timer > 0){
